@@ -81,11 +81,7 @@ class CalculationsController < ApplicationController
 
   def descriptive_statistics
     @numbers = params[:list_of_numbers].gsub(',', '').split.map(&:to_f)
-    def sample_variance
-    m = @numbers.mean
-    sum = @numbers.inject(0){|accum, i| accum + (i - m) ** 2 }
-    return @variance= @sum / (@numbers.length - 1).to_f
-    end
+
     # ================================================================================
     # Your code goes below.
     # The numbers the user input are in the array @numbers.
@@ -107,13 +103,38 @@ class CalculationsController < ApplicationController
 
     @mean = @sum/@count
 
-    @variance = @sum / (@numbers.length - 1)
+    def sample_variance
+    m = @numbers.mean
+    sum = @numbers.inject(0){|accum, i| accum + (i - m) ** 2 }
+    return @variance= @sum / (@numbers.length - 1).to_f
+    end
+
+    numbers= [8,12,4]
+    squared_numbers=[]
+    numbers.each do |num|
+      squared_numbers.push(num**2)
+    end
 
 
-    @standard_deviation =
+    @variance = squared_numbers.sum/@sum
+
+    def standard_deviation
+       return Math.sqrt(@numbers.sample_variance)
+     end
 
 
-    @mode = 
+    @standard_deviation = Math.sqrt(@variance)
+
+    def hash_for_mode(numbers)
+      hash = Hash.new(0)
+      numbers.each do |i|
+        hash[i]+=1
+      end
+      hash
+    end
+
+    hash_for_mode(numbers)
+    @mode = hash_for_mode(numbers)
 
 
     # ================================================================================
