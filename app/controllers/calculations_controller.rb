@@ -81,7 +81,11 @@ class CalculationsController < ApplicationController
 
   def descriptive_statistics
     @numbers = params[:list_of_numbers].gsub(',', '').split.map(&:to_f)
-
+    def sample_variance
+    m = @numbers.mean
+    sum = @numbers.inject(0){|accum, i| accum + (i - m) ** 2 }
+    return @variance= @sum / (@numbers.length - 1).to_f
+    end
     # ================================================================================
     # Your code goes below.
     # The numbers the user input are in the array @numbers.
@@ -103,11 +107,14 @@ class CalculationsController < ApplicationController
 
     @mean = @sum/@count
 
-    @variance = 
+    @variance = @sum / (@numbers.length - 1)
 
-    @standard_deviation = "Replace this string with your answer."
 
-    @mode = "Replace this string with your answer."
+    @standard_deviation =
+
+
+    @mode = 
+
 
     # ================================================================================
     # Your code goes above.
