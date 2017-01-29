@@ -14,11 +14,20 @@ class CalculationsController < ApplicationController
 
 
     @character_count_with_spaces = @text.length
+    #character_count_without_spaces
+
+    #remove whitespace:
+    text_without_spaces=@text.gsub(" ", "")
+    text_without_newlines= text_without_spaces.gsub("\n", "")
+    text_without_carriage_returns=text_without_newlines.gsub("\r", "")
+    text_without_tabs= text_without_carriage_returns.gsub("\t","")
 
     @character_count_without_spaces = @text.delete(' ').delete("\n").length
 
-    @word_count = @text.scan(/[\w-]+/).size
+    array_of_words =@text.split
+    @word_count = @array_of_words.count
     #this runs into an issue with words with '
+
 
     @occurrences = @special_word.size
 
@@ -42,8 +51,10 @@ class CalculationsController < ApplicationController
     # The principal value the user input is in the decimal @principal.
     # ================================================================================
 
-    @rate_percentage=@apr/100
-    @monthly_payment = @principal*@rate_percentage/ ((1-1/(1+@rate_percentage))*(@years*12))
+    @rate_percentage=@apr/100 /12
+    nper=@years*12
+    rate=@apr/100/12
+    @monthly_payment = @principal*@rate_percentage/ ((1-1/(1+@rate_percentage))**(@years*12))
 
     # ================================================================================
     # Your code goes above.
@@ -97,26 +108,40 @@ class CalculationsController < ApplicationController
 
     @range = @maximum-@minimum
 
-    @median = (@sorted_numbers[(@sorted_numbers.length - 1) / 2] + @sorted_numbers[@sorted_numbers.length / 2]) / 2.0
+    if @count.odd?
+      @median = @sorted_numbers[@count/2]
+    else
+      left_of_middle = @sorted_numbers[(@count/2)-1]
+      right_of_middle = @sorted_numbers[(@count/2)]
+      @median= (left_of_middle+right_of_middle)/2
+
+    #@median = (@sorted_numbers[(@sorted_numbers.length - 1) / 2] + @sorted_numbers[@sorted_numbers.length / 2]) / 2.0
 
     @sum = @numbers.sum
 
     @mean = @sum/@count
 
-    def sample_variance
-    m = @numbers.mean
-    sum = @numbers.inject(0){|accum, i| accum + (i - m) ** 2 }
-    return @variance= @sum / (@numbers.length - 1).to_f
+    squared_differences = []
+    @numbers.each do |num|
+      difference= num = @mean
+      squared_differences = difference**2
+      squared_differences.push(squared_differences)
     end
 
-    numbers= [8,12,4]
-    squared_numbers=[]
-    numbers.each do |num|
-      squared_numbers.push(num**2)
-    end
+    #def sample_variance
+    #m = @numbers.mean
+    #sum = @numbers.inject(0){|accum, i| accum + (i - m) ** 2 }
+    #return @variance= @sum / (@numbers.length - 1).to_f
+    #end
+
+    #numbers= [8,12,4]
+    #squared_numbers=[]
+    #numbers.each do |num|
+    #  squared_numbers.push(num**2)
+    #end
 
 
-    @variance = squared_numbers.sum/@sum
+    @variance = squared_differences.sum/@count
 
     def standard_deviation
        return Math.sqrt(@numbers.sample_variance)
@@ -125,16 +150,17 @@ class CalculationsController < ApplicationController
 
     @standard_deviation = Math.sqrt(@variance)
 
-    def hash_for_mode(numbers)
-      hash = Hash.new(0)
-      numbers.each do |i|
-        hash[i]+=1
-      end
-      hash
-    end
+    leader=nil
+    leader_count= 0
 
-    hash_for_mode(numbers)
-    @mode = hash_for_mode(numbers)
+    @numbers.each do |num|
+      occurrences = @numbers.count(num)
+      if occurrences > leader_count
+        leader = num
+        leader_count = occurences
+      end
+    end
+    @mode = leader
 
 
     # ================================================================================
